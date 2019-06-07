@@ -1,3 +1,4 @@
+#if TEST_AMAZON_S3
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -171,3 +172,4 @@ namespace Sleet.AmazonS3.Tests
         }
     }
 }
+#endif
