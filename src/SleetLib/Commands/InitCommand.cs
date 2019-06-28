@@ -133,10 +133,6 @@ namespace Sleet
 
         private static void AddServiceIndexEntry(ISleetFileSystem source, string relativeFilePath, string type, string comment, JObject json)
         {
-            var fileSystemBase = (FileSystemBase)source;
-
-            relativeFilePath = fileSystemBase == null ? relativeFilePath : $"{fileSystemBase.FeedSubPath}{relativeFilePath}";
-
             var id = UriUtility.GetPath(source.BaseURI, relativeFilePath);
 
             RemoveServiceIndexEntry(id, json);
