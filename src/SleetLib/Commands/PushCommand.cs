@@ -184,7 +184,7 @@ namespace Sleet
 
                 if (exists)
                 {
-                    if (await SleetUtility.IsPackageIdenticalOnFeedAsync(package.PackagePath, packageIndex, context.Source, new FlatContainer(context), log) != true)
+                    if (await SleetUtility.IsPackageIdenticalOnFeedAsync(package.PackagePath, packageIndex, context.Source, new FlatContainer(context), log) == false)
                     {
                         await log.LogAsync(LogLevel.Error, $"Trying to re-publish package {packageString} with a different content.");
                         continue;
