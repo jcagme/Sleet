@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using NuGet.Common;
+using NuGet.Packaging;
 
 namespace Sleet
 {
@@ -48,6 +51,30 @@ namespace Sleet
                 // Services with depenencies will pre-fetch files that will be used later
                 // and then wait until the other services have completed.
                 await TaskUtils.RunAsync(tasks, useTaskRun: true, maxThreads: steps.Count, token: CancellationToken.None);
+            }
+        }
+
+        public static async Task<bool?> IsPackageIdenticalOnFeedAsync(string item, PackageIndex packageIndex, ISleetFileSystem source, FlatContainer flatContainer, ILogger log)
+        {
+            using (var package = new PackageArchiveReader(item))
+            {
+                var id = await package.GetIdentityAsync(CancellationToken.None);
+
+                if (await packageIndex.Exists(id))
+                {
+                    using (var remoteStream = await source.Get(flatContainer.GetNupkgPath(id)).GetStream(log, CancellationToken.None))
+                    using (var remote = new MemoryStream())
+                    {
+                        await remoteStream.CopyToAsync(remote);
+
+                        var existingBytes = remote.ToArray();
+                        var localBytes = File.ReadAllBytes(item);
+
+                        return existingBytes.SequenceEqual(localBytes);
+                    }
+                }
+
+                return null;
             }
         }
 
